@@ -74,13 +74,14 @@
         <div class="term-output" id="term-output">
           <div class="term-line">
             <span class="term-prompt">ted@agent:~$</span>
+            <input type="text" id="term-hidden-input" class="term-hidden-input"
+                   autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                   aria-label="Terminal command input"
+                   inputmode="text">
             <span class="term-input-display" id="term-input-display"></span>
             <span class="term-cursor">█</span>
           </div>
         </div>
-        <input type="text" id="term-hidden-input" class="term-hidden-input"
-               autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-               aria-label="Terminal command input">
       </div>
 
       <div class="scroll-indicator">
@@ -207,7 +208,17 @@
         </div>
         <div class="card card-project card-project-coming reveal" role="button" tabindex="0" aria-expanded="false">
           <div class="card-badge">Coming Soon</div>
+          <div class="card-project-placeholder">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" class="placeholder-icon">
+              <circle cx="24" cy="24" r="18" stroke-dasharray="4 4" opacity="0.4"/>
+              <path d="M24 16v8l6 4" stroke-width="1.5" opacity="0.6"/>
+            </svg>
+          </div>
           <h3 class="card-title">More Projects Coming Soon</h3>
+          <div class="card-expand-hint">
+            <svg class="expand-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            <span>Click for details</span>
+          </div>
           <p class="card-text">Stay tuned for more innovative projects and tools — this space is growing.</p>
         </div>
       </div>

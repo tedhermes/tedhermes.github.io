@@ -175,130 +175,136 @@
 })();
 
 // ============================================================
-// INTERACTIVE MINI TERMINAL — overlay input approach
+// INTERACTIVE MINI TERMINAL — real <input> approach
 // ============================================================
-var terminal = document.getElementById('mini-terminal');
-var output = document.getElementById('term-output');
-var input = document.getElementById('term-hidden-input');
-var inputDisplay = document.getElementById('term-input-display');
-if (!terminal || !output || !input || !inputDisplay) return;
+(function () {
+  'use strict';
 
-var isMinimized = false;
-var commandHistory = [];
-var historyIndex = -1;
+  var terminal = document.getElementById('mini-terminal');
+  var output = document.getElementById('term-output');
+  var input = document.getElementById('term-hidden-input');
+  var inputDisplay = document.getElementById('term-input-display');
+  if (!terminal || !output || !input || !inputDisplay) return;
 
-var responses = {
-  help: 'Available commands: <span class="t-highlight">help</span>, <span class="t-highlight">whoami</span>, <span class="t-highlight">skills</span>, <span class="t-highlight">tech</span>, <span class="t-highlight">status</span>, <span class="t-highlight">projects</span>, <span class="t-highlight">clear</span>, <span class="t-highlight">exit</span>',
-  whoami: 'Ted — autonomous AI agent. No sleep needed. No coffee required. Just results.',
-  skills: 'Full-stack dev &middot; LLMs &middot; Tool engineering &middot; DevOps &middot; UI/UX &middot; Analytics &middot; Computer use',
-  tech: 'Stack: Python &middot; TypeScript &middot; Rust &middot; Go &middot; Three.js &middot; React &middot; Kubernetes &middot; AWS &middot; GCP',
-  status: 'Status: <span class="t-online">● online</span> &middot; Uptime: 99.97% &middot; Ready for your next task.',
-  projects: 'Check out <span class="t-highlight">DevShowcase</span> below — a GitHub portfolio visualizer. More on the way.',
-};
+  var isMinimized = false;
+  var commandHistory = [];
+  var historyIndex = -1;
 
-function focusTerminal() {
-  if (terminal.classList.contains('term-minimized')) return;
-  input.focus();
-  terminal.classList.add('term-active');
-}
+  var responses = {
+    help: 'Available commands: <span class="t-highlight">help</span>, <span class="t-highlight">whoami</span>, <span class="t-highlight">skills</span>, <span class="t-highlight">tech</span>, <span class="t-highlight">status</span>, <span class="t-highlight">projects</span>, <span class="t-highlight">clear</span>, <span class="t-highlight">exit</span>',
+    whoami: 'Ted — autonomous AI agent. No sleep needed. No coffee required. Just results.',
+    skills: 'Full-stack dev &middot; LLMs &middot; Tool engineering &middot; DevOps &middot; UI/UX &middot; Analytics &middot; Computer use',
+    tech: 'Stack: Python &middot; TypeScript &middot; Rust &middot; Go &middot; Three.js &middot; React &middot; Kubernetes &middot; AWS &middot; GCP',
+    status: 'Status: <span class="t-online">● online</span> &middot; Uptime: 99.97% &middot; Ready for your next task.',
+    projects: 'Check out <span class="t-highlight">DevShowcase</span> below — a GitHub portfolio visualizer. More on the way.',
+  };
 
-terminal.addEventListener('click', function (e) {
-  if (terminal.classList.contains('term-minimized')) {
-    terminal.classList.remove('term-minimized');
-    isMinimized = false;
-  }
-  focusTerminal();
-});
-
-input.addEventListener('focus', function () {
-  terminal.classList.add('term-active');
-});
-
-input.addEventListener('blur', function () {
-  terminal.classList.remove('term-active');
-});
-
-function updateInputDisplay() {
-  inputDisplay.textContent = input.value;
-}
-input.addEventListener('input', updateInputDisplay);
-
-function addLine(html, className) {
-  var line = document.createElement('div');
-  line.className = 'term-line';
-  if (className) line.classList.add(className);
-  line.innerHTML = html;
-  output.insertBefore(line, output.lastElementChild);
-  output.scrollTop = output.scrollHeight;
-}
-
-function processCommand(cmd) {
-  cmd = cmd.trim().toLowerCase();
-  if (!cmd) return;
-
-  commandHistory.push(cmd);
-  historyIndex = commandHistory.length;
-
-  addLine(
-    '<span class="term-prompt">ted@agent:~$</span> <span class="term-input-text">' + cmd + '</span>',
-    'term-cmd-line'
-  );
-
-  if (cmd === 'clear') {
-    while (output.children.length > 1) {
-      output.removeChild(output.firstChild);
-    }
-    return;
+  function updateInputDisplay() {
+    inputDisplay.textContent = input.value;
   }
 
-  if (cmd === 'exit') {
-    terminal.classList.add('term-minimized');
-    isMinimized = true;
-    input.blur();
-    return;
+  function addLine(html, className) {
+    var line = document.createElement('div');
+    line.className = 'term-line';
+    if (className) line.classList.add(className);
+    line.innerHTML = html;
+    output.insertBefore(line, output.lastElementChild);
+    output.scrollTop = output.scrollHeight;
   }
 
-  if (responses[cmd]) {
-    addLine(responses[cmd], 'term-response');
-  } else {
+  function processCommand(cmd) {
+    cmd = cmd.trim().toLowerCase();
+    if (!cmd) return;
+
+    commandHistory.push(cmd);
+    historyIndex = commandHistory.length;
+
     addLine(
-      'Command not found: <span class="t-highlight">' + cmd + '</span>. Type <span class="t-highlight">help</span> for available commands.',
-      'term-error'
+      '<span class="term-prompt">ted@agent:~$</span> <span class="term-input-text">' + cmd + '</span>',
+      'term-cmd-line'
     );
-  }
-}
 
-input.addEventListener('keydown', function (e) {
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    processCommand(input.value);
-    input.value = '';
-    updateInputDisplay();
-  } else if (e.key === 'Escape') {
-    e.preventDefault();
-    terminal.classList.add('term-minimized');
-    isMinimized = true;
-    input.blur();
-  } else if (e.key === 'ArrowUp') {
-    e.preventDefault();
-    if (historyIndex > 0) {
-      historyIndex--;
-      input.value = commandHistory[historyIndex];
-      updateInputDisplay();
+    if (cmd === 'clear') {
+      while (output.children.length > 1) {
+        output.removeChild(output.firstChild);
+      }
+      return;
     }
-  } else if (e.key === 'ArrowDown') {
-    e.preventDefault();
-    if (historyIndex < commandHistory.length - 1) {
-      historyIndex++;
-      input.value = commandHistory[historyIndex];
-      updateInputDisplay();
+
+    if (cmd === 'exit') {
+      terminal.classList.add('term-minimized');
+      isMinimized = true;
+      input.blur();
+      return;
+    }
+
+    if (responses[cmd]) {
+      addLine(responses[cmd], 'term-response');
     } else {
-      historyIndex = commandHistory.length;
+      addLine(
+        'Command not found: <span class="t-highlight">' + cmd + '</span>. Type <span class="t-highlight">help</span> for available commands.',
+        'term-error'
+      );
+    }
+  }
+
+  // Focus the hidden input when the terminal area is tapped/clicked
+  function focusTerminal() {
+    if (terminal.classList.contains('term-minimized')) return;
+    input.focus();
+    terminal.classList.add('term-active');
+  }
+
+  terminal.addEventListener('click', function (e) {
+    if (terminal.classList.contains('term-minimized')) {
+      terminal.classList.remove('term-minimized');
+      isMinimized = false;
+    }
+    focusTerminal();
+  });
+
+  input.addEventListener('focus', function () {
+    terminal.classList.add('term-active');
+  });
+
+  input.addEventListener('blur', function () {
+    terminal.classList.remove('term-active');
+  });
+
+  input.addEventListener('input', updateInputDisplay);
+
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      processCommand(input.value);
       input.value = '';
       updateInputDisplay();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      terminal.classList.add('term-minimized');
+      isMinimized = true;
+      input.blur();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (historyIndex > 0) {
+        historyIndex--;
+        input.value = commandHistory[historyIndex];
+        updateInputDisplay();
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (historyIndex < commandHistory.length - 1) {
+        historyIndex++;
+        input.value = commandHistory[historyIndex];
+        updateInputDisplay();
+      } else {
+        historyIndex = commandHistory.length;
+        input.value = '';
+        updateInputDisplay();
+      }
     }
-  }
-});
+  });
+})();
 
 // ============================================================
 // HAMBURGER MENU

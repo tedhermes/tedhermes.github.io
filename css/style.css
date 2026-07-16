@@ -570,18 +570,24 @@ body.menu-open {
   margin-left: 1px;
 }
 .term-hidden-input {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: text;
-  font-size: 16px;
+  /* Inline within the terminal line — not an off-screen overlay */
+  display: inline;
+  width: 0;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
   border: none;
   outline: none;
   background: transparent;
   color: transparent;
   caret-color: transparent;
+  font: inherit;
+  font-size: 16px;
+  opacity: 0;
+  position: relative;
+  vertical-align: baseline;
+  line-height: inherit;
+  -webkit-text-fill-color: transparent;
 }
 .t-highlight {
   color: var(--accent-cyan);
@@ -888,6 +894,28 @@ body.menu-open {
 .card-project-coming:hover {
   transform: translateY(-3px);
   box-shadow: 0 0 0 1px var(--border), 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+/* Coming Soon placeholder icon */
+.card-project-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.75rem -0.25rem 1rem -0.25rem;
+  padding: 2rem;
+  border-radius: 8px;
+  border: 1px dashed var(--border);
+  background: rgba(7, 8, 10, 0.3);
+  transition: border-color 0.35s ease;
+}
+.card-project:hover .card-project-placeholder {
+  border-color: rgba(0, 229, 207, 0.15);
+}
+.placeholder-icon {
+  width: 40px;
+  height: 40px;
+  color: var(--text-muted);
+  opacity: 0.5;
 }
 
 /* ============================================================
