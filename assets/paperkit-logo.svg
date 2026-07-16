@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <!-- Document body -->
+  <path d="M28 14h48l24 24v68a8 8 0 0 1-8 8H28a8 8 0 0 1-8-8V22a8 8 0 0 1 8-8z" fill="#6366f1"/>
+  <!-- Folded corner -->
+  <path d="M76 14v16a8 8 0 0 0 8 8h16" fill="#eef2ff"/>
+  <!-- Document lines -->
+  <rect x="34" y="44" width="48" height="3" rx="1.5" fill="#eef2ff" opacity="0.5"/>
+  <rect x="34" y="56" width="48" height="3" rx="1.5" fill="#eef2ff" opacity="0.5"/>
+  <rect x="34" y="68" width="32" height="3" rx="1.5" fill="#eef2ff" opacity="0.5"/>
+  <!-- Accent sparkle -->
+  <path d="M90 20l-6 6M86 18l6 6" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="88" cy="20" r="2" fill="#fbbf24"/>
+</svg>
