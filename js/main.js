@@ -159,10 +159,15 @@
   });
 
   // ============================================================
-  // PROJECT CARD TOGGLE — DISABLED FOR TESTING
+  // PROJECT CARD TOGGLE — Card click toggles, link click navigates
   // ============================================================
-  // Toggle removed — testing if link works without interference
-  
+  var projectCards = document.querySelectorAll('.card-project.reveal');
+  projectCards.forEach(function (card) {
+    card.addEventListener('click', function (e) {
+      if (e.target.closest('a')) return;
+      this.classList.toggle('expanded');
+    });
+  });
 
   // ============================================================
   // INIT
