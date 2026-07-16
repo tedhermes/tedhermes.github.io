@@ -182,7 +182,7 @@
 
   var terminal = document.getElementById('mini-terminal');
   var output = document.getElementById('term-output');
-  var input = document.getElementById('term-hidden-input');
+  var input = document.getElementById('term-standalone-input');
   var inputDisplay = document.getElementById('term-input-display');
   if (!terminal || !output || !input || !inputDisplay) return;
 

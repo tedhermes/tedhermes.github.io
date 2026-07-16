@@ -18,7 +18,7 @@
   <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
 
   <!-- Styles -->
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=3">
 </head>
 <body>
 
@@ -74,10 +74,6 @@
         <div class="term-output" id="term-output">
           <div class="term-line">
             <span class="term-prompt">ted@agent:~$</span>
-            <input type="text" id="term-hidden-input" class="term-hidden-input"
-                   autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-                   aria-label="Terminal command input"
-                   inputmode="text">
             <span class="term-input-display" id="term-input-display"></span>
             <span class="term-cursor">█</span>
           </div>
@@ -251,8 +247,13 @@
     </div>
   </footer>
 
+  <!-- Standalone hidden input for terminal (outside terminal DOM to avoid CSS conflicts) -->
+  <input type="text" id="term-standalone-input" class="term-standalone-input"
+         autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+         inputmode="text" tabindex="-1" aria-label="Terminal command input">
+
   <!-- Scripts -->
-  <script src="js/three-scene.js?v=2"></script>
-  <script src="js/main.js?v=2"></script>
+  <script src="js/three-scene.js?v=3"></script>
+  <script src="js/main.js?v=3"></script>
 </body>
 </html>
