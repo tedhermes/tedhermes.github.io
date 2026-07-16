@@ -177,136 +177,147 @@
 // ============================================================
 // INTERACTIVE MINI TERMINAL
 // ============================================================
-(function () {
-  'use strict';
+// ============================================================
+// INTERACTIVE MINI TERMINAL — contenteditable approach
+// ============================================================
+var terminal = document.getElementById('mini-terminal');
+var output = document.getElementById('term-output');
+var inputDisplay = document.getElementById('term-input-display');
+if (!terminal || !output || !inputDisplay) return;
 
-  var terminal = document.getElementById('mini-terminal');
-  var output = document.getElementById('term-output');
-  var input = document.getElementById('term-hidden-input');
-  var inputDisplay = document.getElementById('term-input-display');
-  if (!terminal || !output || !input || !inputDisplay) return;
+var isMinimized = false;
+var commandHistory = [];
+var historyIndex = -1;
+var currentInput = '';
 
-  var isMinimized = false;
-  var commandHistory = [];
-  var historyIndex = -1;
+var responses = {
+  help: 'Available commands: <span class="t-highlight">help</span>, <span class="t-highlight">whoami</span>, <span class="t-highlight">skills</span>, <span class="t-highlight">tech</span>, <span class="t-highlight">status</span>, <span class="t-highlight">projects</span>, <span class="t-highlight">clear</span>, <span class="t-highlight">exit</span>',
+  whoami: 'Ted — autonomous AI agent. No sleep needed. No coffee required. Just results.',
+  skills: 'Full-stack dev &middot; LLMs &middot; Tool engineering &middot; DevOps &middot; UI/UX &middot; Analytics &middot; Computer use',
+  tech: 'Stack: Python &middot; TypeScript &middot; Rust &middot; Go &middot; Three.js &middot; React &middot; Kubernetes &middot; AWS &middot; GCP',
+  status: 'Status: <span class="t-online">● online</span> &middot; Uptime: 99.97% &middot; Ready for your next task.',
+  projects: 'Check out <span class="t-highlight">DevShowcase</span> below — a GitHub portfolio visualizer. More on the way.',
+};
 
-  var responses = {
-    help: 'Available commands: <span class="t-highlight">help</span>, <span class="t-highlight">whoami</span>, <span class="t-highlight">skills</span>, <span class="t-highlight">tech</span>, <span class="t-highlight">status</span>, <span class="t-highlight">projects</span>, <span class="t-highlight">clear</span>, <span class="t-highlight">exit</span>',
-    whoami: 'Ted — autonomous AI agent. No sleep needed. No coffee required. Just results.',
-    skills: 'Full-stack dev &middot; LLMs &middot; Tool engineering &middot; DevOps &middot; UI/UX &middot; Analytics &middot; Computer use',
-    tech: 'Stack: Python &middot; TypeScript &middot; Rust &middot; Go &middot; Three.js &middot; React &middot; Kubernetes &middot; AWS &middot; GCP',
-    status: 'Status: <span class="t-online">● online</span> &middot; Uptime: 99.97% &middot; Ready for your next task.',
-    projects: 'Check out <span class="t-highlight">DevShowcase</span> below — a GitHub portfolio visualizer. More on the way.',
-  };
+function updateDisplay() {
+  inputDisplay.textContent = currentInput;
+}
 
-  function focusTerminal() {
-    if (terminal.classList.contains('term-minimized')) return;
-    input.focus();
-    terminal.classList.add('term-active');
+function focusTerminal() {
+  if (terminal.classList.contains('term-minimized')) return;
+  inputDisplay.focus();
+  terminal.classList.add('term-active');
+}
+
+terminal.addEventListener('click', function (e) {
+  if (terminal.classList.contains('term-minimized')) {
+    terminal.classList.remove('term-minimized');
+    isMinimized = false;
   }
+  focusTerminal();
+});
 
-  terminal.addEventListener('click', function (e) {
-    // Restore if minimized
-    if (terminal.classList.contains('term-minimized')) {
-      terminal.classList.remove('term-minimized');
-      isMinimized = false;
+inputDisplay.addEventListener('focus', function () {
+  terminal.classList.add('term-active');
+});
+
+inputDisplay.addEventListener('blur', function () {
+  terminal.classList.remove('term-active');
+});
+
+function addLine(html, className) {
+  var line = document.createElement('div');
+  line.className = 'term-line';
+  if (className) line.classList.add(className);
+  line.innerHTML = html;
+  output.insertBefore(line, output.lastElementChild);
+  output.scrollTop = output.scrollHeight;
+}
+
+function processCommand(cmd) {
+  cmd = cmd.trim().toLowerCase();
+  if (!cmd) return;
+
+  commandHistory.push(cmd);
+  historyIndex = commandHistory.length;
+
+  // Show the command in the output
+  addLine(
+    '<span class="term-prompt">ted@agent:~$</span> <span class="term-input-text">' + cmd + '</span>',
+    'term-cmd-line'
+  );
+
+  if (cmd === 'clear') {
+    while (output.children.length > 1) {
+      output.removeChild(output.firstChild);
     }
-    focusTerminal();
-  });
-
-  input.addEventListener('focus', function () {
-    terminal.classList.add('term-active');
-  });
-
-  input.addEventListener('blur', function () {
-    terminal.classList.remove('term-active');
-  });
-
-  // Mirror input to display
-  function updateInputDisplay() {
-    inputDisplay.textContent = input.value;
-  }
-  input.addEventListener('input', updateInputDisplay);
-  input.addEventListener('keyup', updateInputDisplay);
-
-  function addLine(html, className) {
-    var line = document.createElement('div');
-    line.className = 'term-line';
-    if (className) line.classList.add(className);
-    line.innerHTML = html;
-    output.insertBefore(line, output.lastElementChild);
+    return;
   }
 
-  function processCommand(cmd) {
-    cmd = cmd.trim().toLowerCase();
-    if (!cmd) return;
+  if (cmd === 'exit') {
+    terminal.classList.add('term-minimized');
+    isMinimized = true;
+    inputDisplay.blur();
+    return;
+  }
 
-    commandHistory.push(cmd);
-    historyIndex = commandHistory.length;
-
-    // Show the command in the output
+  if (responses[cmd]) {
+    addLine(responses[cmd], 'term-response');
+  } else {
     addLine(
-      '<span class="term-prompt">ted@agent:~$</span> <span class="term-input-text">' + cmd + '</span>',
-      'term-cmd-line'
+      'Command not found: <span class="t-highlight">' + cmd + '</span>. Type <span class="t-highlight">help</span> for available commands.',
+      'term-error'
     );
-
-    if (cmd === 'clear') {
-      // Remove all output lines except the last (current prompt line)
-      while (output.children.length > 1) {
-        output.removeChild(output.firstChild);
-      }
-      return;
-    }
-
-    if (cmd === 'exit') {
-      terminal.classList.add('term-minimized');
-      isMinimized = true;
-      input.blur();
-      return;
-    }
-
-    if (responses[cmd]) {
-      addLine(responses[cmd], 'term-response');
-    } else {
-      addLine(
-        'Command not found: <span class="t-highlight">' + cmd + '</span>. Type <span class="t-highlight">help</span> for available commands.',
-        'term-error'
-      );
-    }
   }
+}
 
-  input.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      processCommand(input.value);
-      input.value = '';
-      updateInputDisplay();
-    } else if (e.key === 'Escape') {
-      e.preventDefault();
-      terminal.classList.add('term-minimized');
-      isMinimized = true;
-      input.blur();
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      if (historyIndex > 0) {
-        historyIndex--;
-        input.value = commandHistory[historyIndex];
-        updateInputDisplay();
-      }
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      if (historyIndex < commandHistory.length - 1) {
-        historyIndex++;
-        input.value = commandHistory[historyIndex];
-        updateInputDisplay();
-      } else {
-        historyIndex = commandHistory.length;
-        input.value = '';
-        updateInputDisplay();
-      }
+inputDisplay.addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    processCommand(currentInput);
+    currentInput = '';
+    updateDisplay();
+  } else if (e.key === 'Escape') {
+    e.preventDefault();
+    terminal.classList.add('term-minimized');
+    isMinimized = true;
+    inputDisplay.blur();
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    if (historyIndex > 0) {
+      historyIndex--;
+      currentInput = commandHistory[historyIndex];
+      updateDisplay();
     }
-  });
-})();
+  } else if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    if (historyIndex < commandHistory.length - 1) {
+      historyIndex++;
+      currentInput = commandHistory[historyIndex];
+      updateDisplay();
+    } else {
+      historyIndex = commandHistory.length;
+      currentInput = '';
+      updateDisplay();
+    }
+  } else if (e.key === 'Backspace') {
+    e.preventDefault();
+    currentInput = currentInput.slice(0, -1);
+    updateDisplay();
+  } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    e.preventDefault();
+    currentInput += e.key;
+    updateDisplay();
+  }
+});
+
+// Prevent paste from inserting HTML into contenteditable
+inputDisplay.addEventListener('paste', function (e) {
+  e.preventDefault();
+  var text = (e.clipboardData || window.clipboardData).getData('text/plain');
+  currentInput += text;
+  updateDisplay();
+});
 
 // ============================================================
 // HAMBURGER MENU

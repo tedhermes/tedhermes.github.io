@@ -558,6 +558,9 @@ body.menu-open {
 }
 .term-input-display {
   color: var(--text-primary);
+  caret-color: transparent;
+  outline: none;
+  min-width: 4px;
 }
 .term-cursor {
   display: inline-block;
@@ -566,12 +569,8 @@ body.menu-open {
   font-weight: 300;
   margin-left: 1px;
 }
-.term-hidden-input {
-  position: absolute;
-  left: -9999px;
-  opacity: 0;
-  width: 1px;
-  height: 1px;
+.term-input-text {
+  color: var(--text-primary);
 }
 .t-highlight {
   color: var(--accent-cyan);
@@ -753,6 +752,16 @@ body.menu-open {
 }
 .card-project .card-text {
   margin-top: 0.5rem;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.35s ease, margin 0.35s ease;
+  margin-top: 0;
+}
+.card-project.expanded .card-text {
+  max-height: 200px;
+  opacity: 1;
+  margin-top: 0.75rem;
 }
 .card-project:hover {
   transform: translateY(-4px);
