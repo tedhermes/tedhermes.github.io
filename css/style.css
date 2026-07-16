@@ -484,6 +484,46 @@ body {
 .card-project .card-text {
   margin-top: 0.5rem;
 }
+.card-project {
+  cursor: pointer;
+  transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+}
+.card-project.expanded {
+  box-shadow: 0 0 0 1px var(--accent-cyan), 0 0 30px var(--border-glow);
+}
+.project-expanded {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 0;
+}
+.project-expanded-inner {
+  overflow: hidden;
+}
+.card-project.expanded .project-expanded {
+  grid-template-rows: 1fr;
+  margin-top: 0.75rem;
+}
+.project-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-code);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--accent-cyan);
+  text-decoration: none;
+  padding: 0.55rem 1.1rem;
+  border-radius: 8px;
+  background: rgba(0, 229, 207, 0.06);
+  border: 1px solid rgba(0, 229, 207, 0.2);
+  transition: all 0.25s ease;
+}
+.project-link:hover {
+  background: rgba(0, 229, 207, 0.12);
+  box-shadow: 0 0 16px var(--border-glow);
+  transform: translateY(-1px);
+}
 
 /* ============================================================
    CONTACT
