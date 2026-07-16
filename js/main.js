@@ -161,17 +161,12 @@
   // ============================================================
   // PROJECT CARD TOGGLE — DevShowcase expanded view
   // ============================================================
-  var projectCard = document.querySelector('.card-project.reveal');
-  if (projectCard) {
-    projectCard.addEventListener('click', function (e) {
-      // Check if click was on or inside the project link
-      var t = e.target;
-      while (t && t !== this) {
-        if (t.tagName === 'A') return; // link click — do nothing, let it navigate
-        t = t.parentElement;
-      }
-      // Click on card body — toggle dropdown
-      this.classList.toggle('expanded');
+  // Only the expand hint (arrow + "Click to explore") triggers the toggle
+  var expandHint = document.querySelector('.card-expand-hint');
+  if (expandHint) {
+    expandHint.addEventListener('click', function (e) {
+      e.stopPropagation();
+      this.parentNode.classList.toggle('expanded');
     });
   }
 
