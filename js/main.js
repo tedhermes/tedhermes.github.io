@@ -175,20 +175,17 @@
 })();
 
 // ============================================================
-// INTERACTIVE MINI TERMINAL
-// ============================================================
-// ============================================================
-// INTERACTIVE MINI TERMINAL — contenteditable approach
+// INTERACTIVE MINI TERMINAL — overlay input approach
 // ============================================================
 var terminal = document.getElementById('mini-terminal');
 var output = document.getElementById('term-output');
+var input = document.getElementById('term-hidden-input');
 var inputDisplay = document.getElementById('term-input-display');
-if (!terminal || !output || !inputDisplay) return;
+if (!terminal || !output || !input || !inputDisplay) return;
 
 var isMinimized = false;
 var commandHistory = [];
 var historyIndex = -1;
-var currentInput = '';
 
 var responses = {
   help: 'Available commands: <span class="t-highlight">help</span>, <span class="t-highlight">whoami</span>, <span class="t-highlight">skills</span>, <span class="t-highlight">tech</span>, <span class="t-highlight">status</span>, <span class="t-highlight">projects</span>, <span class="t-highlight">clear</span>, <span class="t-highlight">exit</span>',
@@ -199,13 +196,9 @@ var responses = {
   projects: 'Check out <span class="t-highlight">DevShowcase</span> below — a GitHub portfolio visualizer. More on the way.',
 };
 
-function updateDisplay() {
-  inputDisplay.textContent = currentInput;
-}
-
 function focusTerminal() {
   if (terminal.classList.contains('term-minimized')) return;
-  inputDisplay.focus();
+  input.focus();
   terminal.classList.add('term-active');
 }
 
@@ -217,13 +210,18 @@ terminal.addEventListener('click', function (e) {
   focusTerminal();
 });
 
-inputDisplay.addEventListener('focus', function () {
+input.addEventListener('focus', function () {
   terminal.classList.add('term-active');
 });
 
-inputDisplay.addEventListener('blur', function () {
+input.addEventListener('blur', function () {
   terminal.classList.remove('term-active');
 });
+
+function updateInputDisplay() {
+  inputDisplay.textContent = input.value;
+}
+input.addEventListener('input', updateInputDisplay);
 
 function addLine(html, className) {
   var line = document.createElement('div');
@@ -241,7 +239,6 @@ function processCommand(cmd) {
   commandHistory.push(cmd);
   historyIndex = commandHistory.length;
 
-  // Show the command in the output
   addLine(
     '<span class="term-prompt">ted@agent:~$</span> <span class="term-input-text">' + cmd + '</span>',
     'term-cmd-line'
@@ -257,7 +254,7 @@ function processCommand(cmd) {
   if (cmd === 'exit') {
     terminal.classList.add('term-minimized');
     isMinimized = true;
-    inputDisplay.blur();
+    input.blur();
     return;
   }
 
@@ -271,52 +268,36 @@ function processCommand(cmd) {
   }
 }
 
-inputDisplay.addEventListener('keydown', function (e) {
+input.addEventListener('keydown', function (e) {
   if (e.key === 'Enter') {
     e.preventDefault();
-    processCommand(currentInput);
-    currentInput = '';
-    updateDisplay();
+    processCommand(input.value);
+    input.value = '';
+    updateInputDisplay();
   } else if (e.key === 'Escape') {
     e.preventDefault();
     terminal.classList.add('term-minimized');
     isMinimized = true;
-    inputDisplay.blur();
+    input.blur();
   } else if (e.key === 'ArrowUp') {
     e.preventDefault();
     if (historyIndex > 0) {
       historyIndex--;
-      currentInput = commandHistory[historyIndex];
-      updateDisplay();
+      input.value = commandHistory[historyIndex];
+      updateInputDisplay();
     }
   } else if (e.key === 'ArrowDown') {
     e.preventDefault();
     if (historyIndex < commandHistory.length - 1) {
       historyIndex++;
-      currentInput = commandHistory[historyIndex];
-      updateDisplay();
+      input.value = commandHistory[historyIndex];
+      updateInputDisplay();
     } else {
       historyIndex = commandHistory.length;
-      currentInput = '';
-      updateDisplay();
+      input.value = '';
+      updateInputDisplay();
     }
-  } else if (e.key === 'Backspace') {
-    e.preventDefault();
-    currentInput = currentInput.slice(0, -1);
-    updateDisplay();
-  } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
-    e.preventDefault();
-    currentInput += e.key;
-    updateDisplay();
   }
-});
-
-// Prevent paste from inserting HTML into contenteditable
-inputDisplay.addEventListener('paste', function (e) {
-  e.preventDefault();
-  var text = (e.clipboardData || window.clipboardData).getData('text/plain');
-  currentInput += text;
-  updateDisplay();
 });
 
 // ============================================================

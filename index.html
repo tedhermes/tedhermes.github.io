@@ -74,12 +74,13 @@
         <div class="term-output" id="term-output">
           <div class="term-line">
             <span class="term-prompt">ted@agent:~$</span>
-            <span class="term-input-display" id="term-input-display" contenteditable="true"
-                  role="textbox" aria-label="Terminal command input"
-                  autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></span>
+            <span class="term-input-display" id="term-input-display"></span>
             <span class="term-cursor">█</span>
           </div>
         </div>
+        <input type="text" id="term-hidden-input" class="term-hidden-input"
+               autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+               aria-label="Terminal command input">
       </div>
 
       <div class="scroll-indicator">
