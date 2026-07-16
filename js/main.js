@@ -159,16 +159,18 @@
   });
 
   // ============================================================
-  // PROJECT CARD TOGGLE — DevShowcase expanded view
+  // PROJECT CARD TOGGLE — Whole card toggles expanded view
+  // Clicks on <a> links open normally without toggling
   // ============================================================
-  // Only the expand hint (arrow + "Click to explore") triggers the toggle
-  var expandHint = document.querySelector('.card-expand-hint');
-  if (expandHint) {
-    expandHint.addEventListener('click', function (e) {
-      e.stopPropagation();
-      this.parentNode.classList.toggle('expanded');
+  var projectCards = document.querySelectorAll('.card-project.reveal');
+  projectCards.forEach(function (card) {
+    card.addEventListener('click', function (e) {
+      // If the click was on a link (or inside one), let it navigate normally
+      if (e.target.closest('a')) return;
+      // Otherwise toggle the expanded class
+      this.classList.toggle('expanded');
     });
-  }
+  });
 
   // ============================================================
   // INIT
