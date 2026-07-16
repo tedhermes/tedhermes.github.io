@@ -159,18 +159,10 @@
   });
 
   // ============================================================
-  // PROJECT CARD TOGGLE — Whole card toggles expanded view
-  // Clicks on <a> links open normally without toggling
+  // PROJECT CARD TOGGLE — DISABLED FOR TESTING
   // ============================================================
-  var projectCards = document.querySelectorAll('.card-project.reveal');
-  projectCards.forEach(function (card) {
-    card.addEventListener('click', function (e) {
-      // If the click was on a link (or inside one), let it navigate normally
-      if (e.target.closest('a')) return;
-      // Otherwise toggle the expanded class
-      this.classList.toggle('expanded');
-    });
-  });
+  // Toggle removed — testing if link works without interference
+  
 
   // ============================================================
   // INIT
