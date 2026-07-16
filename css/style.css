@@ -100,7 +100,16 @@ body {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
-  transition: transform 0.3s ease;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+@media (max-width: 768px) {
+  #navbar {
+    transform: none !important;
+  }
+  #navbar.nav-hidden {
+    transform: none !important;
+  }
 }
 #navbar.nav-hidden {
   transform: translateY(-100%);
@@ -203,7 +212,12 @@ body {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 2rem;
+  padding: 6rem 2rem 4rem;
+}
+@media (max-width: 600px) {
+  .section-hero {
+    padding: 7rem 1.5rem 5rem;
+  }
 }
 .hero-content {
   position: relative;
@@ -295,14 +309,11 @@ body {
 
 /* --- Scroll Indicator --- */
 .scroll-indicator {
-  position: absolute;
-  bottom: 2.5rem;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
+  margin-top: 3rem;
 }
 .scroll-line {
   display: block;

@@ -101,13 +101,13 @@
   const particleTexture = new THREE.CanvasTexture(canvas);
 
   const particleMaterial = new THREE.PointsMaterial({
-    size: 0.18,
+    size: 0.12,
     map: particleTexture,
     vertexColors: true,
     blending: THREE.AdditiveBlending,
     depthWrite: false,
     transparent: true,
-    opacity: 0.85,
+    opacity: 0.35,
   });
 
   const particles = new THREE.Points(particleGeometry, particleMaterial);
@@ -118,11 +118,11 @@
   const torusKnotMat = new THREE.MeshStandardMaterial({
     color: 0x00E5CF,
     emissive: 0x0077B6,
-    emissiveIntensity: 0.5,
-    roughness: 0.4,
-    metalness: 0.3,
+    emissiveIntensity: 0.2,
+    roughness: 0.5,
+    metalness: 0.2,
     transparent: true,
-    opacity: 0.25,
+    opacity: 0.12,
   });
   const torusKnot = new THREE.Mesh(torusKnotGeo, torusKnotMat);
   scene.add(torusKnot);
@@ -133,7 +133,7 @@
     color: 0x00E5CF,
     wireframe: true,
     transparent: true,
-    opacity: 0.1,
+    opacity: 0.04,
   });
   const wireframe = new THREE.Mesh(wireframeGeo, wireframeMat);
   scene.add(wireframe);
@@ -141,10 +141,10 @@
   // --- Lighting (for torus knot) ---
   const ambientLight = new THREE.AmbientLight(0x222244, 1.5);
   scene.add(ambientLight);
-  const pointLight = new THREE.PointLight(0x00E5CF, 2, 15);
+  const pointLight = new THREE.PointLight(0x00E5CF, 1.0, 15);
   pointLight.position.set(3, 3, 5);
   scene.add(pointLight);
-  const pointLight2 = new THREE.PointLight(0x0077B6, 1.5, 12);
+  const pointLight2 = new THREE.PointLight(0x0077B6, 0.8, 12);
   pointLight2.position.set(-3, -2, -3);
   scene.add(pointLight2);
 
