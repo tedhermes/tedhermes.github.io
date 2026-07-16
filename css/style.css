@@ -875,6 +875,11 @@ body.menu-open {
   touch-action: manipulation;
   cursor: pointer;
 }
+.project-expanded-inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
 .project-link:hover {
   background: rgba(0, 229, 207, 0.12);
   box-shadow: 0 0 16px var(--border-glow);
