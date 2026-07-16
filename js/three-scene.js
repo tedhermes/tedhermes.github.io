@@ -1,13 +1,12 @@
 /**
  * Ted Portfolio — Three.js Particle System
- * Spherical particle cloud + torus knot with mouse and scroll parallax.
- * Canvas: transparent background, particles render on top of CSS background.
+ * Enhanced: mouse-driven color shift, emissive boost on torus knot,
+ * faster parallax with stronger particle interaction.
  */
 
 (function () {
   'use strict';
 
-  // --- DOM Element ---
   const container = document.getElementById('three-container');
   if (!container) return;
 
@@ -16,7 +15,7 @@
 
   // --- Camera ---
   const camera = new THREE.PerspectiveCamera(
-    60, // FOV
+    60,
     container.clientWidth / container.clientHeight,
     0.1,
     100
@@ -27,7 +26,7 @@
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setSize(container.clientWidth, container.clientHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setClearColor(0x000000, 0); // Transparent background
+  renderer.setClearColor(0x000000, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   container.appendChild(renderer.domElement);
 
@@ -39,8 +38,8 @@
   const positions = new Float32Array(PARTICLE_COUNT * 3);
   const colors = new Float32Array(PARTICLE_COUNT * 3);
   const sizes = new Float32Array(PARTICLE_COUNT);
+  const originalColors = new Float32Array(PARTICLE_COUNT * 3);
 
-  // Color palette
   const palette = [
     new THREE.Color('#00E5CF'), // Cyan
     new THREE.Color('#E0F7F6'), // Light cyan-white
@@ -73,9 +72,15 @@
     color.g += (Math.random() - 0.5) * 0.08;
     color.b += (Math.random() - 0.5) * 0.08;
 
-    colors[i * 3]     = color.r;
-    colors[i * 3 + 1] = color.g;
-    colors[i * 3 + 2] = color.b;
+    const i3 = i * 3;
+    colors[i3]     = color.r;
+    colors[i3 + 1] = color.g;
+    colors[i3 + 2] = color.b;
+
+    // Store original for color-shift calculations
+    originalColors[i3]     = color.r;
+    originalColors[i3 + 1] = color.g;
+    originalColors[i3 + 2] = color.b;
 
     // Sizes: visible range (0.15 - 0.2)
     sizes[i] = 0.15 + Math.random() * 0.05;
@@ -86,19 +91,19 @@
   particleGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
   // Circular particle texture (soft dot)
-  const canvas = document.createElement('canvas');
-  canvas.width = 32;
-  canvas.height = 32;
-  const ctx = canvas.getContext('2d');
-  const gradient = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+  const texCanvas = document.createElement('canvas');
+  texCanvas.width = 32;
+  texCanvas.height = 32;
+  const tCtx = texCanvas.getContext('2d');
+  const gradient = tCtx.createRadialGradient(16, 16, 0, 16, 16, 16);
   gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
   gradient.addColorStop(0.2, 'rgba(255, 255, 255, 0.9)');
   gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.4)');
   gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, 32, 32);
+  tCtx.fillStyle = gradient;
+  tCtx.fillRect(0, 0, 32, 32);
 
-  const particleTexture = new THREE.CanvasTexture(canvas);
+  const particleTexture = new THREE.CanvasTexture(texCanvas);
 
   const particleMaterial = new THREE.PointsMaterial({
     size: 0.12,
@@ -191,25 +196,71 @@
     const dt = Math.min(clock.getDelta(), 0.1);
     const elapsed = performance.now() * 0.001;
 
-    // Smooth mouse follow
-    target.x += (mouse.x - target.x) * 0.05;
-    target.y += (mouse.y - target.y) * 0.05;
+    // FASTER mouse follow (was 0.05)
+    target.x += (mouse.x - target.x) * 0.08;
+    target.y += (mouse.y - target.y) * 0.08;
 
     // Smooth scroll
     scrollFactor += (targetScrollFactor - scrollFactor) * 0.05;
 
-    // Rotate particles slowly
+    // ============================================================
+    // PARTICLE COLOR SHIFT — particles near mouse direction
+    // blend toward warm white as the mouse moves over them
+    // ============================================================
+    const posAttr = particleGeometry.attributes.position;
+    const colorAttr = particleGeometry.attributes.color;
+    const posArray = posAttr.array;
+    const colorArray = colorAttr.array;
+
+    // Map 2D mouse → 3D direction on the particle sphere
+    const theta = target.x * Math.PI * 0.4;
+    const phi = target.y * Math.PI * 0.25;
+    const mx = Math.sin(theta) * Math.cos(phi);
+    const my = Math.sin(phi);
+    const mz = Math.cos(theta) * Math.cos(phi);
+
+    const mouseActivity = Math.abs(target.x) + Math.abs(target.y);
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const i3 = i * 3;
+      const px = posArray[i3];
+      const py = posArray[i3 + 1];
+      const pz = posArray[i3 + 2];
+      const len = Math.sqrt(px * px + py * py + pz * pz);
+
+      if (len > 0.001) {
+        // Dot product of particle direction with mouse direction
+        const dot = (px * mx + py * my + pz * mz) / len;
+        const influence = Math.max(0, dot);
+
+        // Blend toward warm white (RGB 1, 1, 0.85) — stronger for aligned particles
+        const strength = influence * 0.65;
+        colorArray[i3]     = originalColors[i3]     * (1 - strength) + 1.0   * strength;
+        colorArray[i3 + 1] = originalColors[i3 + 1] * (1 - strength) + 1.0   * strength;
+        colorArray[i3 + 2] = originalColors[i3 + 2] * (1 - strength) + 0.85  * strength;
+      }
+    }
+    colorAttr.needsUpdate = true;
+
+    // ============================================================
+    // PARTICLE ROTATION & PARALLAX
+    // ============================================================
+
+    // Rotate particles slowly (continuous drift)
     particles.rotation.y += dt * 0.08;
     particles.rotation.x += dt * 0.04;
 
-    // Mouse parallax on particles
-    particles.rotation.y += target.x * dt * 0.3;
-    particles.rotation.x += target.y * dt * 0.2;
+    // STRONGER mouse parallax on particles (was 0.3 / 0.2)
+    particles.rotation.y += target.x * dt * 0.5;
+    particles.rotation.x += target.y * dt * 0.35;
 
     // Scroll: expand/contract particles
     const scaleBase = 1.0 + scrollFactor * 0.5;
     const scalePulse = 1.0 + Math.sin(elapsed * 0.5) * 0.03;
     particles.scale.setScalar(scaleBase * scalePulse);
+
+    // Subtle particle size boost near mouse activity
+    particleMaterial.size = 0.12 + mouseActivity * 0.06;
 
     // Torus knot rotation
     torusKnot.rotation.x += dt * 0.15;
@@ -220,6 +271,11 @@
     torusKnot.rotation.y += target.x * dt * 0.5;
     torusKnot.rotation.x += target.y * dt * 0.3;
 
+    // TORUS KNOT EMISSIVE BOOST — glow intensifies near mouse
+    torusKnotMat.emissiveIntensity = 0.2 + mouseActivity * 0.7;
+    // Slightly warm the color too
+    torusKnotMat.color.setHSL(0.46, 0.8, 0.45 + mouseActivity * 0.1);
+
     // Wireframe follows torus knot
     wireframe.rotation.copy(torusKnot.rotation);
 
@@ -228,9 +284,9 @@
     torusKnot.scale.setScalar(knotScale);
     wireframe.scale.setScalar(knotScale);
 
-    // Camera subtle parallax
-    camera.position.x += (target.x * 0.8 - camera.position.x) * 0.03;
-    camera.position.y += (target.y * 0.5 - camera.position.y) * 0.03;
+    // STRONGER camera subtle parallax (was 0.8/0.5, now 1.2/0.8)
+    camera.position.x += (target.x * 1.2 - camera.position.x) * 0.03;
+    camera.position.y += (target.y * 0.8 - camera.position.y) * 0.03;
     camera.lookAt(0, 0, 0);
 
     renderer.render(scene, camera);

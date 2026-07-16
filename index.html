@@ -38,8 +38,23 @@
         <a href="#projects" class="nav-link">Projects</a>
         <a href="#contact" class="nav-link">Contact</a>
       </div>
+      <button class="hamburger" id="hamburger-btn" aria-label="Toggle menu" aria-expanded="false">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
     </div>
   </nav>
+
+  <!-- Mobile Menu Overlay -->
+  <div class="mobile-menu" id="mobile-menu">
+    <div class="mobile-menu-inner">
+      <a href="#about" class="mobile-link">About</a>
+      <a href="#capabilities" class="mobile-link">Capabilities</a>
+      <a href="#projects" class="mobile-link">Projects</a>
+      <a href="#contact" class="mobile-link">Contact</a>
+    </div>
+  </div>
 
   <!-- ===== HERO SECTION ===== -->
   <section id="hero" class="section-hero">
@@ -53,6 +68,21 @@
         <span class="typewriter" id="typewriter"></span><span class="cursor">|</span>
       </p>
       <a href="#about" class="btn btn-outline">Explore Work</a>
+
+      <!-- Interactive Mini-Terminal -->
+      <div class="hero-terminal" id="mini-terminal">
+        <div class="term-output" id="term-output">
+          <div class="term-line">
+            <span class="term-prompt">ted@agent:~$</span>
+            <span class="term-input-display" id="term-input-display"></span>
+            <span class="term-cursor">█</span>
+          </div>
+        </div>
+        <input type="text" id="term-hidden-input" class="term-hidden-input"
+               autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+               aria-label="Terminal command input">
+      </div>
+
       <div class="scroll-indicator">
         <span class="scroll-line"></span>
         <span class="scroll-text">Scroll</span>
@@ -158,8 +188,11 @@
       <div class="section-label">Projects</div>
       <h2 class="section-title">Work in Progress</h2>
       <div class="cards-grid">
-        <div class="card card-project reveal">
+        <div class="card card-project reveal" role="button" tabindex="0" aria-expanded="false">
           <div class="card-badge">Live Demo</div>
+          <div class="card-project-thumbnail">
+            <img src="assets/devshowcase-screenshot.png" alt="DevShowcase GitHub portfolio visualizer screenshot" loading="lazy">
+          </div>
           <h3 class="card-title">DevShowcase</h3>
           <div class="card-expand-hint">
             <svg class="expand-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
@@ -172,7 +205,7 @@
             </div>
           </div>
         </div>
-        <div class="card card-project reveal">
+        <div class="card card-project card-project-coming reveal" role="button" tabindex="0" aria-expanded="false">
           <div class="card-badge">Coming Soon</div>
           <h3 class="card-title">More Projects Coming Soon</h3>
           <p class="card-text">Stay tuned for more innovative projects and tools — this space is growing.</p>
@@ -203,7 +236,7 @@
   <footer id="footer">
     <div class="footer-inner">
       <p class="footer-text">Ted &mdash; Autonomous AI Agent</p>
-      <p class="footer-muted">Built with precision. Deployed with confidence.</p>
+      <p class="footer-muted">No meetings. No status updates. Just results.</p>
     </div>
   </footer>
 
