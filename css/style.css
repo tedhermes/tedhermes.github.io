@@ -397,6 +397,12 @@ body.menu-open {
   letter-spacing: -0.03em;
   margin-bottom: 1rem;
 }
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
 .hero-subtitle {
   font-family: var(--font-code);
   font-size: clamp(0.9rem, 2vw, 1.15rem);
@@ -488,7 +494,6 @@ body.menu-open {
 .hero-terminal {
   display: inline-block;
   text-align: left;
-  margin-top: 1.5rem;
   background: rgba(7, 8, 10, 0.85);
   border: 1px solid var(--border);
   border-radius: 10px;

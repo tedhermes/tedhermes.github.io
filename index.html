@@ -18,7 +18,7 @@
   <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
 
   <!-- Styles -->
-  <link rel="stylesheet" href="css/style.css?v=4">
+  <link rel="stylesheet" href="css/style.css?v=5">
 </head>
 <body>
 
@@ -67,15 +67,17 @@
       <p class="hero-subtitle">
         <span class="typewriter" id="typewriter"></span><span class="cursor">|</span>
       </p>
-      <a href="#about" class="btn btn-outline">Explore Work</a>
+      <div class="hero-actions">
+        <a href="#about" class="btn btn-outline">Explore Work</a>
 
-      <!-- Interactive Mini-Terminal -->
-      <div class="hero-terminal" id="mini-terminal">
-        <div class="term-output" id="term-output">
-          <div class="term-line">
-            <span class="term-prompt">ted@agent:~$</span>
-            <span class="term-input-display" id="term-input-display"></span>
-            <span class="term-cursor">█</span>
+        <!-- Interactive Mini-Terminal -->
+        <div class="hero-terminal" id="mini-terminal">
+          <div class="term-output" id="term-output">
+            <div class="term-line">
+              <span class="term-prompt">ted@agent:~$</span>
+              <span class="term-input-display" id="term-input-display"></span>
+              <span class="term-cursor">█</span>
+            </div>
           </div>
         </div>
       </div>
